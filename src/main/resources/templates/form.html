@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title th:text="${produto.id == null} ? 'Cadastrar peça' : 'Editar peça'">Peça</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div class="faixa">
+    <div class="faixa-conteudo">
+        <div>
+            <h1 th:text="${produto.id == null} ? 'Cadastrar peça' : 'Editar peça'">Cadastrar peça</h1>
+            <p>Preencha os dados e salve para atualizar o estoque.</p>
+        </div>
+    </div>
+</div>
+
+<main class="pagina pagina-estreita">
+    <form th:action="@{/produtos/salvar}" th:object="${produto}" method="post" class="formulario" novalidate>
+        <input type="hidden" th:field="*{id}">
+
+        <div class="campo campo-largo">
+            <label for="nome">Nome da peça</label>
+            <input type="text" id="nome" th:field="*{nome}" th:errorclass="invalido" placeholder="Ex.: Camiseta básica">
+            <span class="erro" th:if="${#fields.hasErrors('nome')}" th:errors="*{nome}"></span>
+        </div>
+
+        <div class="campo">
+            <label for="tamanho">Tamanho</label>
+            <input type="text" id="tamanho" th:field="*{tamanho}" th:errorclass="invalido" list="tamanhos" placeholder="Ex.: M">
+            <datalist id="tamanhos">
+                <option value="PP"></option><option value="P"></option><option value="M"></option>
+                <option value="G"></option><option value="GG"></option><option value="Único"></option>
+            </datalist>
+            <span class="erro" th:if="${#fields.hasErrors('tamanho')}" th:errors="*{tamanho}"></span>
+        </div>
+
+        <div class="campo">
+            <label for="preco">Preço (R$)</label>
+            <input type="number" step="0.01" id="preco" th:field="*{preco}" th:errorclass="invalido" placeholder="0,00">
+            <span class="erro" th:if="${#fields.hasErrors('preco')}" th:errors="*{preco}"></span>
+        </div>
+
+        <div class="campo">
+            <label for="estoque">Em estoque</label>
+            <input type="number" id="estoque" th:field="*{estoque}" th:errorclass="invalido" placeholder="0">
+            <span class="erro" th:if="${#fields.hasErrors('estoque')}" th:errors="*{estoque}"></span>
+        </div>
+
+        <div class="botoes">
+            <button class="botao botao-principal" type="submit">Salvar peça</button>
+            <a class="link" th:href="@{/produtos}">Cancelar</a>
+        </div>
+    </form>
+</main>
+</body>
+</html>

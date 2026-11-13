@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Estoque da loja</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/estilo.css}">
+</head>
+<body>
+
+<div class="faixa">
+    <div class="faixa-conteudo">
+        <div>
+            <h1>Estoque da loja</h1>
+            <p>Peças, tamanhos e quantidades em um só lugar.</p>
+        </div>
+        <a class="botao botao-principal" th:href="@{/produtos/novo}">Cadastrar peça</a>
+    </div>
+</div>
+
+<main class="pagina">
+
+    <p class="aviso" th:if="${mensagem}" th:text="${mensagem}"></p>
+
+    <section class="resumo">
+        <div>
+            <strong th:text="${#lists.size(produtos)}">0</strong>
+            <span>peças na lista</span>
+        </div>
+        <div>
+            <strong th:text="${#lists.isEmpty(produtos)} ? 0 : ${#aggregates.sum(produtos.![estoque])}">0</strong>
+            <span>unidades em estoque</span>
+        </div>
+        <div>
+            <strong th:text="${#lists.isEmpty(produtos)} ? 'R$ 0,00' : 'R$ ' + ${#numbers.formatDecimal(#aggregates.sum(produtos.![preco * estoque]), 1, 'POINT', 2, 'COMMA')}">R$ 0,00</strong>
+            <span>valor total em estoque</span>
+        </div>
+    </section>
+
+    <form class="busca" th:action="@{/produtos}" method="get">
+        <input type="text" name="busca" th:value="${busca}" placeholder="Buscar peça pelo nome" aria-label="Buscar peça pelo nome">
+        <button class="botao" type="submit">Buscar</button>
+        <a class="link" th:if="${busca}" th:href="@{/produtos}">Limpar busca</a>
+    </form>
+
+    <div class="tabela-rolagem">
+        <table>
+            <thead>
+            <tr>
+                <th>Peça</th>
+                <th>Tamanho</th>
+                <th class="num">Preço</th>
+                <th class="num">Estoque</th>
+                <th>Ações</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="p : ${produtos}">
+                <td class="nome" th:text="${p.nome}">Camiseta básica</td>
+                <td><span class="tamanho" th:text="${p.tamanho}">M</span></td>
+                <td class="num" th:text="'R$ ' + ${#numbers.formatDecimal(p.preco, 1, 'POINT', 2, 'COMMA')}">R$ 49,90</td>
+                <td class="num">
+                    <div class="estoque" th:classappend="${p.estoque <= 3} ? 'baixo'">
+                        <span class="barra"><i th:style="'--n:' + ${p.estoque}"></i></span>
+                        <b th:text="${p.estoque}">10</b>
+                    </div>
+                </td>
+                <td>
+                    <div class="acoes">
+                        <a class="link" th:href="@{/produtos/editar/{id}(id=${p.id})}">Editar</a>
+                        <form th:action="@{/produtos/excluir/{id}(id=${p.id})}" method="post"
+                              onsubmit="return confirm('Excluir esta peça?');">
+                            <button class="link link-perigo" type="submit">Excluir</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(produtos)}">
+                <td colspan="5" class="vazio">Nenhuma peça por aqui. Clique em “Cadastrar peça” para adicionar a primeira.</td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+    <p class="legenda">Peças com 3 unidades ou menos ficam em laranja. A barra enche até 20 unidades.</p>
+</main>
+</body>
+</html>
